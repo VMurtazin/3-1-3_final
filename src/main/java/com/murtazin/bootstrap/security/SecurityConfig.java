@@ -17,9 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService,
-                          SuccessHandler successHandler,
-                          PasswordEncoder passwordEncoder) {
+    public SecurityConfig(UserDetailsService userDetailsService, SuccessHandler successHandler, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.successHandler = successHandler;
         this.passwordEncoder = passwordEncoder;
@@ -27,17 +25,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.authorizeRequests()
+
+        http
+                .csrf().disable()
+                .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/user/**").hasRole("USER")
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .and().formLogin()
-                .loginPage("/login")
+                .and()
+                .formLogin()    //добавить страницу логина и хендлер
                 .successHandler(successHandler)
-
-                .and().logout().logoutSuccessUrl("/login")
-                .and().csrf().disable();
+                .and().logout();
     }
 
     @Bean

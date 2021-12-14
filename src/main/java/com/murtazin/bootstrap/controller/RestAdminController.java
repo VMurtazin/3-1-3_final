@@ -2,7 +2,7 @@ package com.murtazin.bootstrap.controller;
 
 import com.murtazin.bootstrap.model.Role;
 import com.murtazin.bootstrap.model.User;
-import com.murtazin.bootstrap.service.RoleService;
+
 import com.murtazin.bootstrap.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -7,6 +7,7 @@ import com.murtazin.bootstrap.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,27 +17,41 @@ import java.util.Set;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepo;
-    private final RoleRepository roleRepository;
+    private final RoleRepository roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepo, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
-        this.roleRepository = roleRepository;
-    }
-
-    @Override
-    public List<User> allUsers() {
-        return userRepo.findAll();
+        this.roleRepo = roleRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void addUser(User user) {
+        String pass = passwordEncoder.encode(user.getPassword());
+        user.setPassword(pass);
         userRepo.save(user);
     }
 
     @Override
-    public void update(User updatedUser) {
-        userRepo.save(updatedUser);
+    public void update(User user) {
+
+        if (user.getPassword()=="") {
+            String password = userRepo.getById(user.getId()).getPassword();
+            user.setPassword(password);
+        } else {
+            String password = user.getPassword();
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
+
+        if (user.getRoles().isEmpty()){
+
+            user.setRoles(userRepo.getById(user.getId()).getRoles());
+        }
+
+        userRepo.save(user);
     }
 
     @Override
@@ -50,8 +65,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getUserByName(String username) {
-        return userRepo.findByUsername(username);
+    public List<User> allUsers() {
+        return userRepo.findAll();
+    }
+
+    @Override
+    public User getUserByName(String name) {
+        return userRepo.findByUsername(name);
     }
 
     @Override
@@ -60,7 +80,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepo.findByEmail(email);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepo.findByEmail(username);
     }
 }
+
