@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name="users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +26,11 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String password, Set<Role> roles) {
+    public User(String username, String lastname, int age, String email, String password, Set<Role> roles) {
         this.username = username;
+        this.lastname = lastname;
+        this.age = age;
+        this.email = email;
         this.password = password;
         this.roles = roles;
     }
@@ -119,12 +122,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", roles=" + roles +
-                '}';
-    }
 }
